@@ -1,3 +1,4 @@
+import "./navbarComponet.css";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -7,7 +8,10 @@ function NavbarComponet() {
 	return (
 		<Navbar expand="lg" className="bg-body-tertiary">
 			<Container fluid>
-				<Navbar.Brand href="#">Daruma</Navbar.Brand>
+				<Navbar.Brand href="#">
+					<img className="me-2" src="/daruma-logo.png" alt="" />
+					Daruma
+				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="navbarScroll" />
 				<Navbar.Collapse id="navbarScroll">
 					<Nav
