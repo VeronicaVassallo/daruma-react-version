@@ -1,5 +1,3 @@
-/*TO DO: crea un calendario, usando anche una libreria , 
-1) crea una modale al clik della casella che permetta all'utente di aggiungere i compiti del giorno*/
 import "./calendarComponet.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -16,7 +14,7 @@ import { MdCheckBox } from "react-icons/md"; //icona checkata
 import { BsTrash3Fill } from "react-icons/bs";
 
 const CalendarComponet = () => {
-	const [goals, setGoals] = useState([]);
+	const [goals, setGoals] = useState([]); //lista di tutti gli obbiettivi
 	const [show, setShow] = useState(false); //Stato dove setto la visibilita della modale
 	const [description, setDescription] = useState(""); //Stato per il campo textarea
 	const [selectedDate, setSelectedDate] = useState(null); //Stato per la data selezionata
@@ -77,8 +75,6 @@ const CalendarComponet = () => {
 			(g) => new Date(g.start).getTime() === new Date(date).getTime()
 		);
 		setGoalsFiltered(gF);
-		console.log("Obbiettivi filtrati", gF);
-		console.log("LISTA TUTTI GLI OBBIETTIVI", goals);
 	};
 
 	const handleDeleteGoal = (id) => {
