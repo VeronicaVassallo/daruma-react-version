@@ -7,7 +7,7 @@ import CalendarComponet from "./componets/calendar/CalendarComponet";
 
 function App() {
 	return (
-		<div>
+		<div className="app bg-dark text-light">
 			<NavbarComponet />
 			<CalendarComponet />
 		</div>

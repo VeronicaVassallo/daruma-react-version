@@ -1,5 +1,6 @@
 /*TO DO: crea un calendario, usando anche una libreria , 
 1) crea una modale al clik della casella che permetta all'utente di aggiungere i compiti del giorno*/
+import "./calendarComponet.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Modal from "react-bootstrap/Modal";
@@ -12,6 +13,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 //react-icons
 import { MdCheckBoxOutlineBlank } from "react-icons/md"; //icona non check
 import { MdCheckBox } from "react-icons/md"; //icona checkata
+import { BsTrash3Fill } from "react-icons/bs";
 
 const CalendarComponet = () => {
 	const [goals, setGoals] = useState([]);
@@ -53,9 +55,9 @@ const CalendarComponet = () => {
 	};
 
 	const handleEventClick = (clickInfo) => {
-		if (window.confirm(`Sei sicuro di voler eliminare l'obbiettivo ?`)) {
-			setGoals(goals.filter((goal) => goal.id !== clickInfo.event.id));
-		}
+		setSelectedDate(clickInfo.event.start); // Imposta la data selezionata
+		filterGoals(clickInfo.event.start); // Filtra gli obiettivi per la data dell'evento cliccato
+		handleShow();
 	};
 
 	const handleEventCompleteToggle = (id) => {
@@ -79,6 +81,17 @@ const CalendarComponet = () => {
 		console.log("LISTA TUTTI GLI OBBIETTIVI", goals);
 	};
 
+	const handleDeleteGoal = (id) => {
+		/* eslint-disable no-restricted-globals */
+		let shouldDelete = confirm("Sei sicuro di voler eliminare l'obiettivo?");
+		/* eslint-enable no-restricted-globals */
+		if (shouldDelete) {
+			// Filtra gli obiettivi mantenendo quelli che non corrispondono all'ID
+			const newListGoals = goals.filter((g) => g.id !== id);
+			setGoals(newListGoals); // Aggiorna lo stato con la nuova lista
+			handleClose(); // Chiudi la modale (opzionale)
+		}
+	};
 	return (
 		<>
 			<FullCalendar
@@ -90,12 +103,10 @@ const CalendarComponet = () => {
 					title: goal.description,
 				}))}
 				dateClick={handleDateClick}
-				eventClick={handleShow}
+				eventClick={handleEventClick}
 				eventContent={(eventInfo) => {
 					return (
-						<div
-							style={{ color: "white", padding: "5px", textAlign: "center" }}
-						>
+						<div style={{ color: "white", padding: "5px" }}>
 							{eventInfo.event.title}{" "}
 						</div>
 					);
@@ -103,24 +114,34 @@ const CalendarComponet = () => {
 			/>
 			<Modal show={show} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Tabella obiettivi:</Modal.Title>
+					<Modal.Title>Tabella obiettivi: </Modal.Title>
 				</Modal.Header>
+				<img id="gifDaruma" src="darumagif.gif" alt="daruma" />
 				<Modal.Body>
 					{goalsFiltered.length > 0 ? (
 						goalsFiltered.map((g) => (
-							<li key={g.id}>
-								{g.description}{" "}
-								{g.completed ? (
-									<MdCheckBox onClick={() => handleEventCompleteToggle(g.id)} />
-								) : (
-									<MdCheckBoxOutlineBlank
-										onClick={() => handleEventCompleteToggle(g.id)}
-									/>
-								)}
-							</li>
+							<div key={g.id}>
+								<div className="d-flex justify-content-around">
+									<div>
+										{g.description}{" "}
+										{g.completed ? (
+											<MdCheckBox
+												onClick={() => handleEventCompleteToggle(g.id)}
+											/>
+										) : (
+											<MdCheckBoxOutlineBlank
+												onClick={() => handleEventCompleteToggle(g.id)}
+											/>
+										)}
+									</div>
+									<div className="px-2">
+										<BsTrash3Fill onClick={() => handleDeleteGoal(g.id)} />
+									</div>
+								</div>
+							</div>
 						))
 					) : (
-						<p>Nessun obiettivo per oggi.</p> // Messaggio alternativo
+						<p>Nessun obiettivo per oggi.</p>
 					)}
 					<hr />
 					<p>Aggiungi un nuovo obbiettivo</p>
@@ -128,7 +149,7 @@ const CalendarComponet = () => {
 					<textarea
 						name="description"
 						id="description"
-						value={description} //Usa lo stato per il valore
+						value={description}
 						onChange={handleInputChange}
 						rows="4"
 					></textarea>

@@ -6,10 +6,10 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 
 function NavbarComponet() {
 	return (
-		<Navbar expand="lg" className="bg-body-tertiary">
-			<Container fluid>
+		<Navbar id="nav" expand="lg" className="bg-body-tertiary">
+			<Container fluid className="bg-danger">
 				<Navbar.Brand href="#">
-					<img className="me-2" src="/daruma-logo.png" alt="" />
+					<img className="logoDaruma me-2" src="/daruma-logo.png" alt="" />
 					Daruma
 				</Navbar.Brand>
 				<Navbar.Toggle aria-controls="navbarScroll" />
@@ -28,6 +28,7 @@ function NavbarComponet() {
 							<NavDropdown.Item href="#action5">Impostazioni</NavDropdown.Item>
 						</NavDropdown>
 					</Nav>
+					<div>TOT Daruma </div>
 				</Navbar.Collapse>
 			</Container>
 		</Navbar>
