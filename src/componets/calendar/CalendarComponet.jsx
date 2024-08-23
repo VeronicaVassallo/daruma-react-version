@@ -14,6 +14,7 @@ const CalendarComponet = () => {
 	const [show, setShow] = useState(false); //Stato dove setto la visibilita della modale
 	const [description, setDescription] = useState(""); //Stato per il campo textarea
 	const [selectedDate, setSelectedDate] = useState(null); //Stato per la data selezionata
+	const [goalsFiltered, setGoalsFiltered] = useState([]); //Stato per gli obbiettivi filtrati in base al giorno
 
 	const handleClose = () => {
 		setShow(false);
@@ -37,12 +38,13 @@ const CalendarComponet = () => {
 				completed: false,
 			};
 			setGoals([...goals, newGoal]);
-			handleClose(); // Chiudi la modale e resetta gli stati
+			handleClose(); //Chiude la modale e resetta gli stati
 		}
 	};
 
 	const handleDateClick = (info) => {
 		setSelectedDate(info.date); //Al clik inserisco la data della casella nello stato
+		filterGoals(info.date);
 		handleShow(); //Apre la modale per aggiungere un nuovo evento
 	};
 
@@ -60,6 +62,15 @@ const CalendarComponet = () => {
 			return g;
 		});
 		setGoals(updatedGoals);
+	};
+
+	const filterGoals = (date) => {
+		const gF = goals.filter(
+			(g) => new Date(g.start).getTime() === new Date(date).getTime()
+		);
+		setGoalsFiltered(gF);
+		console.log("Obbiettivi filtrati", gF);
+		console.log("LISTA TUUTI GLI OBBIETTIVI", goals);
 	};
 
 	return (
@@ -95,14 +106,22 @@ const CalendarComponet = () => {
 			/>
 			<Modal show={show} onHide={handleClose}>
 				<Modal.Header closeButton>
-					<Modal.Title>Aggiungi l'Obbiettivo da raggiungere</Modal.Title>
+					<Modal.Title>Tabella obiettivi:</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
+					{goalsFiltered &&
+						goalsFiltered.length > 0 &&
+						goalsFiltered.map((g) => {
+							return <li>{g.description}</li>;
+						})}
+					<hr />
+					<p>Aggiungi un nuovo obbiettivo</p>
+
 					<textarea
 						name="description"
 						id="description"
 						value={description} //Usa lo stato per il valore
-						onChange={handleInputChange} //Usa la funzione aggiornata
+						onChange={handleInputChange}
 					></textarea>
 				</Modal.Body>
 				<Modal.Footer>
