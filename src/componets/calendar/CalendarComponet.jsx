@@ -4,10 +4,14 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+//FullCalendar
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+//react-icons
+import { MdCheckBoxOutlineBlank } from "react-icons/md"; //icona non check
+import { MdCheckBox } from "react-icons/md"; //icona checkata
 
 const CalendarComponet = () => {
 	const [goals, setGoals] = useState([]);
@@ -54,14 +58,16 @@ const CalendarComponet = () => {
 		}
 	};
 
-	const handleEventCompleteToggle = (clickInfo) => {
+	const handleEventCompleteToggle = (id) => {
 		const updatedGoals = goals.map((g) => {
-			if (g.id === clickInfo.event.id) {
+			if (g.id === id) {
 				return { ...g, completed: !g.completed };
 			}
+
 			return g;
 		});
 		setGoals(updatedGoals);
+		handleClose();
 	};
 
 	const filterGoals = (date) => {
@@ -70,7 +76,7 @@ const CalendarComponet = () => {
 		);
 		setGoalsFiltered(gF);
 		console.log("Obbiettivi filtrati", gF);
-		console.log("LISTA TUUTI GLI OBBIETTIVI", goals);
+		console.log("LISTA TUTTI GLI OBBIETTIVI", goals);
 	};
 
 	return (
@@ -84,16 +90,7 @@ const CalendarComponet = () => {
 					title: goal.description,
 				}))}
 				dateClick={handleDateClick}
-				eventClick={(clickInfo) => {
-					const action = prompt(
-						'Scrivi "rimuovi" per eliminare o "svolto" per contrassegnare come svolto/non svolto:'
-					);
-					if (action === "rimuovi") {
-						handleEventClick(clickInfo);
-					} else if (action === "svolto") {
-						handleEventCompleteToggle(clickInfo);
-					}
-				}}
+				eventClick={handleShow}
 				eventContent={(eventInfo) => {
 					return (
 						<div
@@ -109,11 +106,22 @@ const CalendarComponet = () => {
 					<Modal.Title>Tabella obiettivi:</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
-					{goalsFiltered &&
-						goalsFiltered.length > 0 &&
-						goalsFiltered.map((g) => {
-							return <li>{g.description}</li>;
-						})}
+					{goalsFiltered.length > 0 ? (
+						goalsFiltered.map((g) => (
+							<li key={g.id}>
+								{g.description}{" "}
+								{g.completed ? (
+									<MdCheckBox onClick={() => handleEventCompleteToggle(g.id)} />
+								) : (
+									<MdCheckBoxOutlineBlank
+										onClick={() => handleEventCompleteToggle(g.id)}
+									/>
+								)}
+							</li>
+						))
+					) : (
+						<p>Nessun obiettivo per oggi.</p> // Messaggio alternativo
+					)}
 					<hr />
 					<p>Aggiungi un nuovo obbiettivo</p>
 
@@ -122,6 +130,7 @@ const CalendarComponet = () => {
 						id="description"
 						value={description} //Usa lo stato per il valore
 						onChange={handleInputChange}
+						rows="4"
 					></textarea>
 				</Modal.Body>
 				<Modal.Footer>
