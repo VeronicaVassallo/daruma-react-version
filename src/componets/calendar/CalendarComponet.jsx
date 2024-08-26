@@ -13,13 +13,15 @@ import { MdCheckBoxOutlineBlank } from "react-icons/md"; //icona non check
 import { MdCheckBox } from "react-icons/md"; //icona checkata
 import { BsTrash3Fill } from "react-icons/bs";
 
+import { dataGoals } from "../../data/goals";
+
 const CalendarComponet = () => {
-	const [goals, setGoals] = useState([]); //lista di tutti gli obbiettivi
+	const [goals, setGoals] = useState(dataGoals); //lista di tutti gli obbiettivi
 	const [show, setShow] = useState(false); //Stato dove setto la visibilita della modale
 	const [description, setDescription] = useState(""); //Stato per il campo textarea
 	const [selectedDate, setSelectedDate] = useState(null); //Stato per la data selezionata
 	const [goalsFiltered, setGoalsFiltered] = useState([]); //Stato per gli obbiettivi filtrati in base al giorno
-
+	const [message, setMessage] = useState(false); //Stato che mostra il messaggio se il campo textarea non è stato riempito correttamente
 	const handleClose = () => {
 		setShow(false);
 		setDescription(""); //Reset del campo textarea
@@ -34,22 +36,26 @@ const CalendarComponet = () => {
 
 	const handleSave = () => {
 		if (description && selectedDate) {
+			setMessage(false);
 			const newGoal = {
 				id: uuidv4(),
 				description,
 				start: selectedDate,
-				allDay: true,
+				allDay: true, //FullCalendar considera , il calendario tratterà l'evento come un evento di un'intera giornata, quindi non è necessario specificare l'ora.
 				completed: false,
 			};
 			setGoals([...goals, newGoal]);
 			handleClose(); //Chiude la modale e resetta gli stati
+		} else {
+			setMessage(true);
 		}
 	};
 
 	const handleDateClick = (info) => {
-		setSelectedDate(info.date); //Al clik inserisco la data della casella nello stato
-		filterGoals(info.date);
-		handleShow(); //Apre la modale per aggiungere un nuovo evento
+		const selectedISODate = info.dateStr; // Usa dateStr che è già in formato ISO
+		setSelectedDate(selectedISODate); // Imposta la data come stringa ISO
+		filterGoals(info.date); // Filtra gli obiettivi usando la data in oggetto Date
+		handleShow(); // Apre la modale per aggiungere un nuovo evento
 	};
 
 	const handleEventClick = (clickInfo) => {
@@ -102,55 +108,69 @@ const CalendarComponet = () => {
 				eventClick={handleEventClick}
 				eventContent={(eventInfo) => {
 					return (
-						<div style={{ color: "white", padding: "5px" }}>
+						<div style={{ color: "white", padding: "5px", textWrap: "wrap" }}>
 							{eventInfo.event.title}{" "}
 						</div>
 					);
 				}}
 			/>
 			<Modal show={show} onHide={handleClose}>
-				<Modal.Header closeButton>
-					<Modal.Title>Tabella obiettivi: </Modal.Title>
+				<Modal.Header closeButton className="bg-danger">
+					<Modal.Title className="nerko">TABELLA OBIETTIVI</Modal.Title>
 				</Modal.Header>
-				<img id="gifDaruma" src="darumagif.gif" alt="daruma" />
-				<Modal.Body>
-					{goalsFiltered.length > 0 ? (
-						goalsFiltered.map((g) => (
-							<div key={g.id}>
-								<div className="d-flex justify-content-around">
-									<div>
-										{g.description}{" "}
-										{g.completed ? (
-											<MdCheckBox
-												onClick={() => handleEventCompleteToggle(g.id)}
-											/>
-										) : (
-											<MdCheckBoxOutlineBlank
-												onClick={() => handleEventCompleteToggle(g.id)}
-											/>
-										)}
-									</div>
-									<div className="px-2">
-										<BsTrash3Fill onClick={() => handleDeleteGoal(g.id)} />
-									</div>
-								</div>
-							</div>
-						))
-					) : (
-						<p>Nessun obiettivo per oggi.</p>
-					)}
-					<hr />
-					<p>Aggiungi un nuovo obbiettivo</p>
 
-					<textarea
-						name="description"
-						id="description"
-						value={description}
-						onChange={handleInputChange}
-						rows="4"
-					></textarea>
+				<Modal.Body className="bg-danger text-light">
+					<div className="d-flex">
+						<div id="Container-Goals">
+							{goalsFiltered.length > 0 ? (
+								goalsFiltered.map((g) => (
+									<div key={g.id}>
+										<div className="d-flex justify-content-between">
+											<div>
+												{g.description}{" "}
+												{g.completed ? (
+													<MdCheckBox
+														className="cursor"
+														onClick={() => handleEventCompleteToggle(g.id)}
+													/>
+												) : (
+													<MdCheckBoxOutlineBlank
+														className="cursor"
+														onClick={() => handleEventCompleteToggle(g.id)}
+													/>
+												)}
+											</div>
+											<div className="px-2 cursor">
+												<BsTrash3Fill onClick={() => handleDeleteGoal(g.id)} />
+											</div>
+										</div>
+										<br />
+										<hr />
+									</div>
+								))
+							) : (
+								<p>Nessun obiettivo per oggi !</p>
+							)}
+						</div>
+						<div>
+							<img id="Daruma-Modal" src="file.png" alt="daruma" />
+						</div>
+					</div>
+					<div>
+						<p className="nerko text-dark fs-4">Aggiungi un nuovo obbiettivo</p>
+
+						<textarea
+							name="description"
+							id="description"
+							value={description}
+							onChange={handleInputChange}
+							rows="4"
+							placeholder="Ex. Completa 5 esercizi di matematica"
+						></textarea>
+						{!message ? <p></p> : <p>Inserisci un obbiettivo</p>}
+					</div>
 				</Modal.Body>
-				<Modal.Footer>
+				<Modal.Footer className="bg-danger">
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>

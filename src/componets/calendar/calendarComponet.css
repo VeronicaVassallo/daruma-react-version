@@ -1,4 +1,21 @@
-#gifDaruma {
-	width: 80%;
-	padding-left: 20%;
+#Container-Goals {
+	width: 250%;
+}
+#Daruma-Modal {
+	width: 10em;
+	position: relative;
+	right: -5%;
+	animation: DarumaMoviment 3s alternate-reverse 1s infinite ease-in-out;
+}
+textarea {
+	width: 100%;
+}
+
+@keyframes DarumaMoviment {
+	from {
+		top: -5%;
+	}
+	to {
+		top: 5%;
+	}
 }
