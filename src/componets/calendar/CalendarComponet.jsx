@@ -77,9 +77,15 @@ const CalendarComponet = () => {
 	};
 
 	const filterGoals = (date) => {
-		const gF = goals.filter(
-			(g) => new Date(g.start).getTime() === new Date(date).getTime()
-		);
+		const normalizedDate = new Date(date);
+		normalizedDate.setHours(0, 0, 0, 0); //resetto l'ora, perche altrimenti il filtro non funziona
+
+		const gF = goals.filter((g) => {
+			const goalDate = new Date(g.start);
+			goalDate.setHours(0, 0, 0, 0);
+			return goalDate.getTime() === normalizedDate.getTime();
+		});
+
 		setGoalsFiltered(gF);
 	};
 
